@@ -7,7 +7,7 @@ data_loader=DataLoader("Cora")
 
 data=data_loader.load_for_node_classification()
 
-model=GCN(input_feature=data.num_node_features,output_feature=data.num_classes)
+model=GCN(input_feature=data.num_node_features,output_feature=torch.unique(data.y).size(0))
 
 trainer=Trainer(model=model)
 
