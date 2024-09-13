@@ -61,11 +61,12 @@ class DataLoader:
         
 
         ### node label 
-        y_train=self.y_train_df['label'].values # .values = numpy.ndarray 반환
-        y_val=self.y_val_df['label'].values
-        y_test=self.y_test_df['label'].values
+        y_train_ndarray=self.y_train_df['label'].values # .values = numpy.ndarray 반환
+        y_val_ndarray=self.y_val_df['label'].values
+        y_test_ndarray=self.y_test_df['label'].values
 
-        y_label = np.concatenate([y_train, y_val, y_test])
+        y_label_ndarray = np.concatenate([y_train_ndarray, y_val_ndarray, y_test_ndarray])
+        y_label=torch.from_numpy(y_label_ndarray)
 
         ### mask
         num_nodes=self.x_df.shape[0] # row 개수 = node 수
