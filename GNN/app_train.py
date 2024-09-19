@@ -1,8 +1,3 @@
-import sys
-import os
-# 현재 파일의 상위 디렉토리(GNN) 경로를 Python 경로에 추가
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 import torch
 from data_load import DataLoader
 from model import R_GNN
