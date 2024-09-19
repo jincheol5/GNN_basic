@@ -50,9 +50,10 @@ class Trainer:
         self.model.to(device)
         data.to(device)
 
-        self.model.eval()
-        pred = (self.model(data,data.test_R)>=0.5).long() # 0.5보다 크면 1, 작으면 0, output: pred=(num_labels,1)
-        correct = (pred == data.test_R_label).sum()
-        acc = int(correct) / int(data.test_R_label.sum())
+        with torch.no_grad():
+            self.model.eval()
+            pred = (self.model(data,data.test_R)>=0.5).long() # 0.5보다 크면 1, 작으면 0, output: pred=(num_labels,1)
+            correct = (pred == data.test_R_label).sum()
+            acc = int(correct) / int(data.test_R_label.sum())
 
         print(f"acc: {acc * 100:.2f}%")
