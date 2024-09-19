@@ -1,16 +1,16 @@
 import torch
 from data_load import DataLoader
-from model import GCN_N
+from model import R_GNN
 from GNN.model_train import Trainer
 
 data_loader=DataLoader("Cora")
 
-data=data_loader.load_for_node_classification()
+data=data_loader.load_R()
 
-model=GCN_N(input_feature=data.num_node_features,output_feature=torch.unique(data.y).size(0))
+model=R_GNN(input_feature=data.num_node_features)
 
 trainer=Trainer(model=model)
 
-trainer.train(data=data,lr=0.01,epochs=100)
+trainer.train_R(data=data,lr=0.01,epochs=100)
 
-trainer.evaluate(data=data)
+trainer.evaluate_R(data=data)

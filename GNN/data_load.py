@@ -14,7 +14,7 @@ class DataLoader:
         self.dataset_name=dataset_name
         self.dataset_path=os.path.join("..", "data", self.dataset_name)
 
-    def load_for_link_prediction(self):
+    def load_L(self):
         self.x_df=pd.read_csv(os.path.join(self.dataset_path,"x.csv"))
         self.edge_index_df=pd.read_csv(os.path.join(self.dataset_path,"edge_index.csv"))
         
@@ -38,7 +38,7 @@ class DataLoader:
 
         return self.graph
 
-    def load_for_node_classification(self):
+    def load_N(self):
         self.x_df=pd.read_csv(os.path.join(self.dataset_path,"x.csv"))
         self.edge_index_df=pd.read_csv(os.path.join(self.dataset_path,"edge_index.csv"))
         self.y_train_df=pd.read_csv(os.path.join(self.dataset_path,"y_train.csv"))
@@ -90,3 +90,48 @@ class DataLoader:
 
         return self.graph
 
+    def load_R(self):
+        self.x_df=pd.read_csv(os.path.join(self.dataset_path,"x.csv"))
+        self.edge_index_df=pd.read_csv(os.path.join(self.dataset_path,"edge_index.csv"))
+        self.train_reachability_df=pd.read_csv(os.path.join(self.dataset_path,"train_reachability.csv")) # source target label
+        self.test_reachability_df=pd.read_csv(os.path.join(self.dataset_path,"test_reachability.csv"))
+
+        ### node features
+        x_features_pandas_series=self.x_df.apply(lambda x: x.to_numpy(), axis=1) # axis=1 -> 행 단위로 작업 수행
+        x_features_ndarray=np.vstack(x_features_pandas_series) # .vstack() -> 여러 개의 ndarray를 하나의 2차원 배열로 쌓을 수 있다
+        x_features=torch.tensor(x_features_ndarray,dtype=torch.float)
+
+        ### edge_index
+        source_edge_index=self.edge_index_df['source'].values # .values = numpy.ndarray 반환
+        target_edge_index=self.edge_index_df['target'].values
+
+        edge_index_ndarray = np.array([source_edge_index, target_edge_index]) # 빠른 연산을 위해 ndarray 두개를 하나의 ndarray로 변환 후 tensor로 변환
+        
+        edge_index = torch.tensor(edge_index_ndarray, dtype=torch.long)
+
+        ### train_reachability
+        source_train_reachability=self.train_reachability_df['source'].values # .values = numpy.ndarray 반환
+        target_train_reachability=self.train_reachability_df['target'].values
+        label_train_reachability=self.train_reachability_df['label'].values
+
+        train_reachability_ndarray=np.array([source_train_reachability,target_train_reachability])
+        train_reachability_label_ndarray=np.array(label_train_reachability)
+
+        train_R=torch.tensor(train_reachability_ndarray, dtype=torch.long)
+        train_R_label=torch.tensor(train_reachability_label_ndarray, dtype=torch.long)
+
+        ### test_reachability
+        source_test_reachability=self.test_reachability_df['source'].values # .values = numpy.ndarray 반환
+        target_test_reachability=self.test_reachability_df['target'].values
+        label_test_reachability=self.test_reachability_df['label'].values
+
+        test_reachability_ndarray=np.array([source_test_reachability,target_test_reachability])
+        test_reachability_label_ndarray=np.array(label_test_reachability)
+
+        test_R=torch.tensor(test_reachability_ndarray, dtype=torch.long)
+        test_R_label=torch.tensor(test_reachability_label_ndarray, dtype=torch.long)
+
+        ### set Data
+        self.graph=Data(x=x_features,edge_index=edge_index,train_R=train_R,train_R_label=train_R_label,test_R=test_R,test_R_label=test_R_label)
+
+        return self.graph
