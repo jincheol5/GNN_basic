@@ -1,6 +1,6 @@
 import torch
-from data_load import DataLoader
-from model import R_GNN
+from GNN.data_load import DataLoader
+from GNN.model import R_GNN
 from GNN.model_train import Trainer
 
 data_loader=DataLoader("Cora")
