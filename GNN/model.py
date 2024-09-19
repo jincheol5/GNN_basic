@@ -27,9 +27,8 @@ class Encoder(torch.nn.Module):
         self.conv1 = GCNConv(input_feature, 16)
         self.conv2 = GCNConv(16, input_feature)
 
-    def forward(self, data):
-        x, edge_index = data.x, data.edge_index
-
+    def forward(self, x,edge_index):
+        
         x = self.conv1(x, edge_index)
         x = F.relu(x)
         x = self.conv2(x, edge_index)
