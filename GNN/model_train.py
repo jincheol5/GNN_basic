@@ -35,8 +35,8 @@ class Trainer:
 
     def train_R(self,data,train_dataset,lr=0.01,epochs=100,batch_size=64):
         device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model.to(device)
-        data.to(device)
+        self.model=self.model.to(device)
+        data=data.to(device)
         optimizer=torch.optim.Adam(self.model.parameters(), lr=lr)
 
         self.model.train()
@@ -46,9 +46,9 @@ class Trainer:
         for epoch in tqdm(range(epochs),desc="Training..."):
             for reachability_edge_index,reachability_edge_label in train_dataloader:
                 
-                reachability_edge_index.to(device) # (batchsize,2)
+                reachability_edge_index=reachability_edge_index.to(device) # (batchsize,2) 
                 reachability_edge_label=reachability_edge_label.unsqueeze(1) # (batchsize) -> (batchsize,1)
-                reachability_edge_label.to(device) # (batchsize,1)
+                reachability_edge_label=reachability_edge_label.to(device) # (batchsize,1)
                 
                 optimizer.zero_grad()
                 output=self.model(data,reachability_edge_index) # output: z=(batchsize,1)
@@ -58,8 +58,8 @@ class Trainer:
     
     def evaluate_R(self,data,test_dataset,batch_size=64):
         device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model.to(device)
-        data.to(device)
+        self.model=self.model.to(device)
+        data=data.to(device)
 
         test_dataloader=DataLoader(test_dataset,batch_size=batch_size,shuffle=True)
 
@@ -69,9 +69,9 @@ class Trainer:
             self.model.eval()
             for reachability_edge_index,reachability_edge_label in test_dataloader:
 
-                reachability_edge_index.to(device)
+                reachability_edge_index=reachability_edge_index.to(device)
                 reachability_edge_label=reachability_edge_label.unsqueeze(0) # (batchsize) -> (batchsize,1)
-                reachability_edge_label.to(device)
+                reachability_edge_label=reachability_edge_label.to(device)
 
                 pred = (self.model(data,reachability_edge_index)>=0.5).long() # 0.5보다 크면 1, 작으면 0, output: pred=(num_labels,1)
                 correct = (pred == reachability_edge_label).sum()
