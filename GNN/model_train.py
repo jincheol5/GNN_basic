@@ -1,6 +1,8 @@
 import torch
 import torch.nn.functional as F
+from torch.utils.data import DataLoader
 from tqdm import tqdm
+
 
 class Trainer:
     def __init__(self,model=None):
@@ -31,29 +33,45 @@ class Trainer:
         
         print(f"acc: {acc * 100:.2f}%")
 
-    def train_R(self,data,lr=0.01,epochs=100):
+    def train_R(self,data,train_dataset,lr=0.01,epochs=100,batch_size=64):
         device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model.to(device)
         data.to(device)
         optimizer=torch.optim.Adam(self.model.parameters(), lr=lr)
 
         self.model.train()
+
+        train_dataloader=DataLoader(train_dataset,batch_size=batch_size,shuffle=True)
+
         for epoch in tqdm(range(epochs),desc="Training..."):
-            optimizer.zero_grad()
-            output=self.model(data,data.train_R) # output: z=(num_labels,1)
-            loss=F.binary_cross_entropy(output,data.train_R_label) # train_R_label=(num_labels,1)
-            loss.backward()
-            optimizer.step()
+            for reachability_edge_index,reachability_edge_label in train_dataloader:
+                reachability_edge_index.to(device)
+                reachability_edge_label.to(device)
+                optimizer.zero_grad()
+                output=self.model(data,reachability_edge_index) # output: z=(num_labels,1)
+                loss=F.binary_cross_entropy(output,reachability_edge_label) # reachability_edge_label=(num_labels,1)
+                loss.backward()
+                optimizer.step()
     
-    def evaluate_R(self,data):
+    def evaluate_R(self,data,test_dataset,batch_size=64):
         device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model.to(device)
         data.to(device)
 
+        test_dataloader=DataLoader(test_dataset,batch_size=batch_size,shuffle=True)
+
+        correct_sum=0
+        num_labels=0
         with torch.no_grad():
             self.model.eval()
-            pred = (self.model(data,data.test_R)>=0.5).long() # 0.5보다 크면 1, 작으면 0, output: pred=(num_labels,1)
-            correct = (pred == data.test_R_label).sum()
-            acc = int(correct) / int(data.test_R_label.sum())
+            for reachability_edge_index,reachability_edge_label in test_dataloader:
+                reachability_edge_index.to(device)
+                reachability_edge_label.to(device)
+                pred = (self.model(data,reachability_edge_index)>=0.5).long() # 0.5보다 크면 1, 작으면 0, output: pred=(num_labels,1)
+                correct = (pred == reachability_edge_label).sum()
+                correct_sum+=correct
+                num_labels+=reachability_edge_label.sum()
+        
+        acc = int(correct_sum) / int(num_labels)
 
         print(f"acc: {acc * 100:.2f}%")

@@ -2,9 +2,26 @@ import os
 import pandas as pd
 import numpy as np
 import torch
+from torch.utils.data import Dataset
 from torch_geometric.data import Data
 
-class DataLoader:
+class ReachabilityDataset(Dataset):
+    def __init__(self,reachability_edge_index,reachability_edge_label):
+        self.reachability_edge_index=reachability_edge_index # (2,num_reachability_edges)
+        self.reachability_edge_label=reachability_edge_label # (num_reachability_edges,1)
+
+    def __len__(self):
+        return len(self.reachability_edge_label)
+
+    # getitem: 주어진 index에 해당하는 샘플을 데이터셋에서 불러오고 반환
+    def __getitem__(self,idx):
+        reachability_edge=self.reachability_edge_index[:,idx]
+        label=self.reachability_edge_label[idx]
+
+        return reachability_edge,label
+
+
+class DataLoad:
 
     def __init__(self,dataset_name=None):
         self.dataset_name=dataset_name
@@ -117,8 +134,10 @@ class DataLoader:
         train_reachability_ndarray=np.array([source_train_reachability,target_train_reachability])
         train_reachability_label_ndarray=np.array(label_train_reachability)
 
-        train_R=torch.tensor(train_reachability_ndarray, dtype=torch.long)
-        train_R_label=torch.tensor(train_reachability_label_ndarray, dtype=torch.long)
+        train_reachability_edge_index=torch.tensor(train_reachability_ndarray, dtype=torch.long)
+        train_reachability_edge_label=torch.tensor(train_reachability_label_ndarray, dtype=torch.long)
+
+        train_reachability_dataset=ReachabilityDataset(train_reachability_edge_index,train_reachability_edge_label)
 
         ### test_reachability
         source_test_reachability=self.test_reachability_df['source'].values # .values = numpy.ndarray 반환
@@ -128,10 +147,12 @@ class DataLoader:
         test_reachability_ndarray=np.array([source_test_reachability,target_test_reachability])
         test_reachability_label_ndarray=np.array(label_test_reachability)
 
-        test_R=torch.tensor(test_reachability_ndarray, dtype=torch.long)
-        test_R_label=torch.tensor(test_reachability_label_ndarray, dtype=torch.long)
+        test_reachability_edge_index=torch.tensor(test_reachability_ndarray, dtype=torch.long)
+        test_reachability_edge_label=torch.tensor(test_reachability_label_ndarray, dtype=torch.long)
+
+        test_reachability_dataset=ReachabilityDataset(test_reachability_edge_index,test_reachability_edge_label)
 
         ### set Data
-        self.graph=Data(x=x_features,edge_index=edge_index,train_R=train_R,train_R_label=train_R_label,test_R=test_R,test_R_label=test_R_label)
+        self.graph=Data(x=x_features,edge_index=edge_index)
 
-        return self.graph
+        return self.graph,train_reachability_dataset,test_reachability_dataset
