@@ -135,7 +135,7 @@ class DataLoad:
         train_reachability_label_ndarray=np.array(label_train_reachability)
 
         train_reachability_edge_index=torch.tensor(train_reachability_ndarray, dtype=torch.long)
-        train_reachability_edge_label=torch.tensor(train_reachability_label_ndarray, dtype=torch.long)
+        train_reachability_edge_label=torch.tensor(train_reachability_label_ndarray, dtype=torch.float)
 
         train_reachability_dataset=ReachabilityDataset(train_reachability_edge_index,train_reachability_edge_label)
 
@@ -148,7 +148,7 @@ class DataLoad:
         test_reachability_label_ndarray=np.array(label_test_reachability)
 
         test_reachability_edge_index=torch.tensor(test_reachability_ndarray, dtype=torch.long)
-        test_reachability_edge_label=torch.tensor(test_reachability_label_ndarray, dtype=torch.long)
+        test_reachability_edge_label=torch.tensor(test_reachability_label_ndarray, dtype=torch.float)
 
         test_reachability_dataset=ReachabilityDataset(test_reachability_edge_index,test_reachability_edge_label)
 
