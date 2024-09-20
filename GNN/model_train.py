@@ -75,10 +75,10 @@ class Trainer:
                 reachability_edge_label=reachability_edge_label.to(device)
 
                 pred = (self.model(data,reachability_edge_index)>=0.5).long() # 0.5보다 크면 1, 작으면 0, output: pred=(num_labels,1)
-                correct = (pred == reachability_edge_label).sum()
+                correct = (pred == reachability_edge_label).sum().item()
                 correct_sum+=correct
-                num_labels+=reachability_edge_label.sum()
+                num_labels+=reachability_edge_label.size(0)
         
-        acc = int(correct_sum) / int(num_labels)
+        acc = correct_sum / num_labels
 
         print(f"acc: {acc * 100:.2f}%")
