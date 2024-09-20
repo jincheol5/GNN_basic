@@ -15,10 +15,10 @@ class ReachabilityDataset(Dataset):
 
     # getitem: 주어진 index에 해당하는 샘플을 데이터셋에서 불러오고 반환
     def __getitem__(self,idx):
-        reachability_edge=self.reachability_edge_index[:,idx]
-        label=self.reachability_edge_label[idx]
+        edge_index=self.reachability_edge_index[:,idx]
+        edge_label=self.reachability_edge_label[idx] 
 
-        return reachability_edge,label
+        return edge_index,edge_label
 
 
 class DataLoad:

@@ -45,9 +45,11 @@ class Trainer:
 
         for epoch in tqdm(range(epochs),desc="Training..."):
             for reachability_edge_index,reachability_edge_label in train_dataloader:
-
+                
                 reachability_edge_index.to(device) # (batchsize,2)
-                reachability_edge_label.to(device) # (batchsize)
+                reachability_edge_label=reachability_edge_label.unsqueeze(0) # (batchsize) -> (batchsize,1)
+                reachability_edge_label.to(device) # (batchsize,1)
+                
                 optimizer.zero_grad()
                 output=self.model(data,reachability_edge_index) # output: z=(batchsize,1)
                 loss=F.binary_cross_entropy(output,reachability_edge_label) # reachability_edge_label=(batchsize,1)
@@ -66,8 +68,11 @@ class Trainer:
         with torch.no_grad():
             self.model.eval()
             for reachability_edge_index,reachability_edge_label in test_dataloader:
+
                 reachability_edge_index.to(device)
+                reachability_edge_label=reachability_edge_label.unsqueeze(0) # (batchsize) -> (batchsize,1)
                 reachability_edge_label.to(device)
+                
                 pred = (self.model(data,reachability_edge_index)>=0.5).long() # 0.5보다 크면 1, 작으면 0, output: pred=(num_labels,1)
                 correct = (pred == reachability_edge_label).sum()
                 correct_sum+=correct
