@@ -68,7 +68,7 @@ class Trainer:
         num_labels=0
         with torch.no_grad():
             self.model.eval()
-            for reachability_edge_index,reachability_edge_label in test_dataloader:
+            for reachability_edge_index,reachability_edge_label in tqdm(test_dataloader,desc="Evaluating..."):
 
                 reachability_edge_index=reachability_edge_index.to(device)
                 reachability_edge_label=reachability_edge_label.unsqueeze(1) # (batchsize) -> (batchsize,1)
