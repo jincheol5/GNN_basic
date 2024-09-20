@@ -42,15 +42,17 @@ class Decoder(torch.nn.Module):
         self.linear2 = torch.nn.Linear(input_feature, 1)
 
     def forward(self, x,reachability_edge_index):
-        src,tar=reachability_edge_index
+        # reachability_edge_index=(batchsize,2)
+        src = reachability_edge_index[:, 0] 
+        tar = reachability_edge_index[:, 1]
 
-        z=torch.cat([x[src],x[tar]],dim=-1) # (num_labels,z_features)
+        z=torch.cat([x[src],x[tar]],dim=-1) # (batchsize,z_features)
 
         z=self.linear1(z)
         z = F.relu(z)
         z=self.linear2(z)
 
-        return z # (num_labels,1)
+        return z # (batchsize,1)
 
 class R_GNN(torch.nn.Module):
     def __init__(self,input_feature):
@@ -61,8 +63,8 @@ class R_GNN(torch.nn.Module):
     def forward(self, data,reachability_edge_index):
         x, edge_index = data.x, data.edge_index
 
-        x=self.encoder(x,edge_index) # output: x=(num_nodes,features)
-        z=self.decoder(x,reachability_edge_index) # output: z=(num_labels,1)
+        x=self.encoder(x,edge_index) # output: x=(batchsize,features)
+        z=self.decoder(x,reachability_edge_index) # output: z=(batchsize,1)
 
         return F.sigmoid(z)
 

@@ -46,14 +46,11 @@ class Trainer:
         for epoch in tqdm(range(epochs),desc="Training..."):
             for reachability_edge_index,reachability_edge_label in train_dataloader:
 
-                print(reachability_edge_index.size())
-                print(reachability_edge_label.size())
-
-                reachability_edge_index.to(device) # (batchsize,2,num_reachability_edges)
-                reachability_edge_label.to(device) # (batchsize,num_reachability_edges,1)
+                reachability_edge_index.to(device) # (batchsize,2)
+                reachability_edge_label.to(device) # (batchsize)
                 optimizer.zero_grad()
-                output=self.model(data,reachability_edge_index) # output: z=(num_labels,1)
-                loss=F.binary_cross_entropy(output,reachability_edge_label) # reachability_edge_label=(num_labels,1)
+                output=self.model(data,reachability_edge_index) # output: z=(batchsize,1)
+                loss=F.binary_cross_entropy(output,reachability_edge_label) # reachability_edge_label=(batchsize,1)
                 loss.backward()
                 optimizer.step()
     
