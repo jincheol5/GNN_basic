@@ -25,11 +25,11 @@ class DataLoad:
 
     def __init__(self,dataset_name=None):
         self.dataset_name=dataset_name
-        self.dataset_path=os.path.join("..", "data",self.dataset_name)
+        self.dataset_path=os.path.join("data",self.dataset_name)
 
     def set_dataset_name(self,dataset_name):
         self.dataset_name=dataset_name
-        self.dataset_path=os.path.join("..", "data", self.dataset_name)
+        self.dataset_path=os.path.join("data", self.dataset_name)
 
     def load_L(self):
         self.x_df=pd.read_csv(os.path.join(self.dataset_path,"x.csv"))
