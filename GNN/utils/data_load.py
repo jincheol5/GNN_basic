@@ -80,7 +80,7 @@ class DataLoad:
         ### node label
         num_nodes=self.x_df.shape[0] # row 개수 = node 수
 
-        y_label=tensor = torch.full((num_nodes,), -1) # 값 -1로 채워진 num_nodes 크기의 1차원 tensor
+        y_label=torch.full((num_nodes,), -1) # 값 -1로 채워진 num_nodes 크기의 1차원 tensor
         # 준지도 학습 노드 분류의 경우, 값이 주어지지 않은 노드에 대한 라벨은 -1로 지정한다
         # mask 된 노드들에 대해서만 학습을 하기 때문에, 라벨이 없는 노드의 y 값은 손실 계산 시 사용되지 않으므로, -1은 학습에 영향을 미치지 않는다
         # y_train_df['index'].values로 y_label tensor의 특정 위치에 접근 후, 그 위치에 y_train_df['label']에 저장된 값을 할당

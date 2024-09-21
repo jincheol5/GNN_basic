@@ -24,7 +24,7 @@ torch.backends.cudnn.benchmark = False
 
 data_loader=DataLoad("Cora")
 data=data_loader.load_N()
-model=GCN_N(input_feature=data.num_node_features)
+model=GCN_N(input_feature=data.num_node_features,output_feature=len(torch.unique(data.y)))
 model_trainer=Trainer(model=model)
 Trainer.train_N(data=data)
 Trainer.evaluate_N(data=data)
