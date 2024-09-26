@@ -44,13 +44,14 @@ class Trainer:
         total_edge_size=pos_edge_index.size(1) + neg_edge_index.size(1)
         edge_labels=torch.zeros(total_edge_size, dtype=torch.float, device=device)
         edge_labels[:pos_edge_index.size(1)] = 1
+        edge_labels=edge_labels.unsqueeze(1) # (total_edge_num,) -> (total_edge_num,1)
 
         optimizer=torch.optim.Adam(self.model.parameters(), lr=lr)
 
         self.model.train()
         for epoch in tqdm(range(epochs),desc="Training..."):
             optimizer.zero_grad()
-            output=self.model(x,pos_edge_index,neg_edge_index)
+            output=self.model(x,pos_edge_index,neg_edge_index) # output=(total_edge_num,1)
             loss=F.binary_cross_entropy(output,edge_labels) # output=(total_edge_num,1), edge_labels=(total_edge_num,1)
             loss.backward()
             optimizer.step()
@@ -65,6 +66,7 @@ class Trainer:
         total_edge_size=pos_edge_index.size(1) + neg_edge_index.size(1)
         edge_labels=torch.zeros(total_edge_size, dtype=torch.float, device=device)
         edge_labels[:pos_edge_index.size(1)] = 1
+        edge_labels=edge_labels.unsqueeze(1) # (total_edge_num,) -> (total_edge_num,1)
 
 
         correct_sum=0
