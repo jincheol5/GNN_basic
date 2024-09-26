@@ -37,9 +37,9 @@ class Trainer:
     def train_L(self,x,pos_edge_index,neg_edge_index,lr=0.01,epochs=100):
         device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model.to(device)
-        x.to(device)
-        pos_edge_index.to(device)
-        neg_edge_index.to(device)
+        x=x.to(device)
+        pos_edge_index=pos_edge_index.to(device)
+        neg_edge_index=neg_edge_index.to(device)
 
         total_edge_size=pos_edge_index.size(1) + neg_edge_index.size(1)
         edge_labels=torch.zeros(total_edge_size, dtype=torch.float, device=device)
@@ -58,9 +58,9 @@ class Trainer:
     def evaluate_L(self,x,pos_edge_index,neg_edge_index):
         device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model.to(device)
-        x.to(device)
-        pos_edge_index.to(device)
-        neg_edge_index.to(device)
+        x=x.to(device)
+        pos_edge_index=pos_edge_index.to(device)
+        neg_edge_index=neg_edge_index.to(device)
 
         total_edge_size=pos_edge_index.size(1) + neg_edge_index.size(1)
         edge_labels=torch.zeros(total_edge_size, dtype=torch.float, device=device)
