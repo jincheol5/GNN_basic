@@ -46,7 +46,9 @@ class Decoder(torch.nn.Module):
         src = forward_edge_index[0] # src=(num_pos_edges+num_neg_edges,)
         tar = forward_edge_index[1] # tar=(num_pos_edges+num_neg_edges,)
 
-        logits=(x[src]*x[tar]).sum(dim=-1) # dot product
+        logits=(x[src]*x[tar]).sum(dim=-1) # dot product -> (num_pos_edges+num_neg_edges,)
+
+        logits=logits.unsqueeze(1) # (num_pos_edges+num_neg_edges,) -> (num_pos_edges+num_neg_edges,1)
 
         return logits # (num_pos_edges+num_neg_edges,1)
 
