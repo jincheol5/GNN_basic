@@ -38,9 +38,29 @@ class GCN_Encoder(torch.nn.Module):
 class Decoder(torch.nn.Module):
     def __init__(self,input_feature):
         super().__init__()
+        self.linear1 = torch.nn.Linear(2*input_feature, 1)
         
     def forward(self, x,pos_edge_index,neg_edge_index):
         
+        forward_edge_index=torch.cat([pos_edge_index, neg_edge_index], dim=-1) # (2,num_pos_edges) + (2,num_neg_edges) = (2,num_pos_edges+num_neg_edges)
+
+        src = forward_edge_index[0] # src=(num_pos_edges+num_neg_edges,)
+        tar = forward_edge_index[1] # tar=(num_pos_edges+num_neg_edges,)
+
+        z=torch.cat([x[src],x[tar]],dim=-1) 
+
+        z=self.linear1(z)
+
+        return z 
+
+
+class GNN_L(torch.nn.Module):
+    def __init__(self,input_feature):
+        super().__init__()
+        self.encoder=GCN_Encoder(input_feature)
+        self.decoder=Decoder(input_feature)
+
+    def decode(self,x,pos_edge_index,neg_edge_index):
         forward_edge_index=torch.cat([pos_edge_index, neg_edge_index], dim=-1) # (2,num_pos_edges) + (2,num_neg_edges) = (2,num_pos_edges+num_neg_edges)
 
         src = forward_edge_index[0] # src=(num_pos_edges+num_neg_edges,)
@@ -51,13 +71,6 @@ class Decoder(torch.nn.Module):
         logits=logits.unsqueeze(1) # (num_pos_edges+num_neg_edges,) -> (num_pos_edges+num_neg_edges,1)
 
         return logits # (num_pos_edges+num_neg_edges,1)
-
-
-class GNN_L(torch.nn.Module):
-    def __init__(self,input_feature):
-        super().__init__()
-        self.encoder=GCN_Encoder(input_feature)
-        self.decoder=Decoder(input_feature)
 
     def forward(self,x,pos_edge_index,neg_edge_index):
 
