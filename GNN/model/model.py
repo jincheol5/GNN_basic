@@ -35,7 +35,7 @@ class GCN_Encoder(torch.nn.Module):
 
         return x
 
-class Decoder(torch.nn.Module):
+class Decoder(torch.nn.Module): # concatenate 
     def __init__(self,input_feature):
         super().__init__()
         self.linear1 = torch.nn.Linear(2*input_feature, 1)
@@ -60,7 +60,7 @@ class GNN_L(torch.nn.Module):
         self.encoder=GCN_Encoder(input_feature)
         self.decoder=Decoder(input_feature)
 
-    def decode(self,x,pos_edge_index,neg_edge_index):
+    def decode(self,x,pos_edge_index,neg_edge_index): # dot product
         forward_edge_index=torch.cat([pos_edge_index, neg_edge_index], dim=-1) # (2,num_pos_edges) + (2,num_neg_edges) = (2,num_pos_edges+num_neg_edges)
 
         src = forward_edge_index[0] # src=(num_pos_edges+num_neg_edges,)
@@ -75,6 +75,7 @@ class GNN_L(torch.nn.Module):
     def forward(self,x,pos_edge_index,neg_edge_index):
 
         x=self.encoder(x,pos_edge_index)
-        z=self.decoder(x,pos_edge_index,neg_edge_index)
+        # z=self.decoder(x,pos_edge_index,neg_edge_index)
+        z=self.decode(x,pos_edge_index,neg_edge_index)
 
         return F.sigmoid(z)
