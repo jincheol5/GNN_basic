@@ -75,7 +75,7 @@ class GNN_L(torch.nn.Module):
     def forward(self,x,pos_edge_index,neg_edge_index):
 
         x=self.encoder(x,pos_edge_index)
-        # z=self.decoder(x,pos_edge_index,neg_edge_index)
-        z=self.decode(x,pos_edge_index,neg_edge_index)
+        z=self.decoder(x,pos_edge_index,neg_edge_index)
+        # z=self.decode(x,pos_edge_index,neg_edge_index)
 
         return F.sigmoid(z)
