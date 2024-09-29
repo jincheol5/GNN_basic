@@ -110,7 +110,7 @@ class DataLoad:
         ### set pos, neg edge index
         self.graph=train_test_split_edges(self.graph)
 
-        # train_neg_edge_index=negative_sampling(edge_index=self.graph.train_pos_edge_index)
-        train_neg_edge_index=negative_sampling(edge_index=self.graph.train_pos_edge_index, num_neg_samples=self.graph.train_pos_edge_index.size(1))
+        train_neg_edge_index=negative_sampling(edge_index=self.graph.train_pos_edge_index) # default num_neg_samples = train_pos_edge_index 수  
+        # train_neg_edge_index=negative_sampling(edge_index=self.graph.train_pos_edge_index, 2*num_neg_samples=self.graph.train_pos_edge_index.size(1))
 
         return self.graph,train_neg_edge_index
