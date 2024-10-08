@@ -3,7 +3,7 @@ import random
 import numpy as np
 import torch
 from utils.data_load import DataLoad
-from model.basic_model import GCN_N 
+from model.model import GCN_N 
 from model.model_train import Trainer
 
 ### seed setting
@@ -18,8 +18,6 @@ torch.cuda.manual_seed_all(seed)
 # PyTorch의 난수 생성 결정론적 동작 보장 (동일 연산 결과 보장)
 torch.backends.cudnn.deterministic = True 
 torch.backends.cudnn.benchmark = False
-
-
 
 
 data_loader=DataLoad("Cora")

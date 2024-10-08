@@ -3,7 +3,7 @@ import random
 import numpy as np
 import torch
 from utils.data_load import DataLoad
-from model.basic_model import GNN_L
+from model.model import GNN_L
 from model.model_train import Trainer
 
 ### seed setting
